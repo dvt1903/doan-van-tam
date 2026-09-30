@@ -19,8 +19,6 @@ Dự án bài tập xây dựng một website có **4 chức năng AI**, phát t
 
 ## Cách làm
 
-Kiến trúc gồm 3 phần:
-
 ```text
 React (web/) → FastAPI (api/) → AI models (core/)
                               ├─ ResNet-18
@@ -29,48 +27,43 @@ React (web/) → FastAPI (api/) → AI models (core/)
                               └─ Qwen2.5 + MiniLM RAG
 ```
 
-Backend nạp mô hình một lần. Giao diện gửi ảnh/câu hỏi đến FastAPI; API trả JSON cho các tác vụ ảnh và dùng SSE để stream câu trả lời chatbot.
+Backend nạp mô hình một lần. Giao diện gửi ảnh/câu hỏi đến FastAPI; API trả JSON cho các tác vụ ảnh và chatbot trả kết quả từ pipeline RAG.
 
 ## Chạy dự án
 
 ### Windows
-
-Cài Python 3.12 và Node.js 22+, sau đó chạy:
-
 ```bat
 start.bat
 ```
 
 ### Linux / macOS
-
 ```bash
 chmod +x start.sh
 ./start.sh
 ```
 
-Mở `http://localhost:8000`.
+Sau đó mở `http://localhost:8000`.
 
 Lần chạy đầu cần Internet để tải dữ liệu và pretrained models. Không cần API key.
 
-## Kết quả kiểm thử
+## Kết quả
 
-ResNet-18 đạt **90,19% accuracy trên 367 ảnh test riêng**. Dự án có API test, smoke test và benchmark trong `tests/` và `scripts/`.
+ResNet-18 đạt **90,19% accuracy trên 367 ảnh test riêng**.
 
-## Cấu trúc chính
+## Cấu trúc
 
 ```text
 api/             FastAPI backend
 core/            4 module AI
 web/             React + Vite frontend
-scripts/         chuẩn bị dữ liệu/model, benchmark, smoke test
-tests/           API tests
+scripts/         chuẩn bị dữ liệu/model
 data/kb/         tài liệu RAG ShopLite
 docs/            ảnh giao diện và slide
 ```
 
-## Slide cách làm
+## Slide ngắn gọn về cách làm
 
-📎 [Tải slide AI_Studio_Cach_Lam.pptx](docs/AI_Studio_Cach_Lam.pptx)
+📎 [Xem slide tóm tắt](docs/AI_Studio_Cach_Lam.md)
 
 ## AI và phiên bản
 
