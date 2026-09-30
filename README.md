@@ -1,121 +1,83 @@
-# 📚 Simple NotebookLM — RAG Learning Assistant
+# AI Studio — Web tích hợp 4 chức năng AI
 
-Dự án mô phỏng một phiên bản **NotebookLM đơn giản** dành cho học tập từ tài liệu PDF.
+Dự án bài tập xây dựng một website có **4 chức năng AI**, phát triển từ notebook `AI_Web_Apps_Streamlit_React.ipynb` của giảng viên.
 
-![Giao diện Simple NotebookLM](docs/ui-preview.svg)
+## 4 chức năng
 
-## Chức năng chính
+| Chức năng | Mô hình |
+|---|---|
+| 🌼 Nhận diện loài hoa | ResNet-18, ImageNet1K V1 + TF Flowers |
+| 🚗 Phát hiện đối tượng | YOLO11n, 80 lớp COCO |
+| 🔎 Tìm kiếm ảnh | CLIP ViT-B/32 + FAISS |
+| 💬 Chatbot RAG ShopLite | Qwen2.5-0.5B-Instruct + MiniLM |
 
-1. **Hỏi đáp theo tài liệu (RAG)** — truy xuất các đoạn liên quan và trả lời kèm nguồn file/trang.
-2. **Tóm tắt tài liệu** — tạo bản tóm tắt ngắn gọn và các ý chính.
-3. **Tạo Quiz** — sinh câu hỏi trắc nghiệm từ nội dung PDF.
-4. **Tạo Flashcards** — sinh thẻ hỏi/đáp để ôn tập.
+## Ảnh giao diện
 
-## Công nghệ
+![Tổng quan giao diện 4 chức năng AI](docs/screenshots/ui-overview.jpg)
 
-- Python 3.10+
-- Streamlit
-- PyMuPDF
-- Sentence Transformers
-- scikit-learn
-- Google Gemini 2.5 Flash (tùy chọn)
-- python-dotenv
+Ảnh tổng hợp gồm giao diện nhận diện hoa, phát hiện đối tượng, tìm kiếm ảnh, chatbot RAG và giao diện mobile.
 
-> Ứng dụng có **Offline Demo Mode** để vẫn chạy khi chưa cấu hình Gemini API Key. Khi có API key, hệ thống dùng Gemini để tạo nội dung tự nhiên hơn.
+## Cách làm
 
-## Cấu trúc
+Kiến trúc gồm 3 phần:
 
 ```text
-.
-├── app.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── docs/
-│   ├── PRESENTATION.md
-│   └── ui-preview.svg
-└── README.md
+React (web/) → FastAPI (api/) → AI models (core/)
+                              ├─ ResNet-18
+                              ├─ YOLO11n
+                              ├─ CLIP + FAISS
+                              └─ Qwen2.5 + MiniLM RAG
 ```
 
-## Cài đặt
+Backend nạp mô hình một lần. Giao diện gửi ảnh/câu hỏi đến FastAPI; API trả JSON cho các tác vụ ảnh và dùng SSE để stream câu trả lời chatbot.
 
-```bash
-git clone https://github.com/dvt1903/doan-van-tam.git
-cd doan-van-tam
-python -m venv .venv
-```
+## Chạy dự án
 
 ### Windows
 
+Cài Python 3.12 và Node.js 22+, sau đó chạy:
+
+```bat
+start.bat
+```
+
+### Linux / macOS
+
 ```bash
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-streamlit run app.py
+chmod +x start.sh
+./start.sh
 ```
 
-### macOS / Linux
+Mở `http://localhost:8000`.
 
-```bash
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-streamlit run app.py
+Lần chạy đầu cần Internet để tải dữ liệu và pretrained models. Không cần API key.
+
+## Kết quả kiểm thử
+
+ResNet-18 đạt **90,19% accuracy trên 367 ảnh test riêng**. Dự án có API test, smoke test và benchmark trong `tests/` và `scripts/`.
+
+## Cấu trúc chính
+
+```text
+api/             FastAPI backend
+core/            4 module AI
+web/             React + Vite frontend
+scripts/         chuẩn bị dữ liệu/model, benchmark, smoke test
+tests/           API tests
+data/kb/         tài liệu RAG ShopLite
+docs/            ảnh giao diện và slide
 ```
 
-Mở trình duyệt tại `http://localhost:8501`.
+## Slide cách làm
 
-## Cấu hình Gemini (không bắt buộc)
+📎 [Tải slide AI_Studio_Cach_Lam.pptx](docs/AI_Studio_Cach_Lam.pptx)
 
-Trong file `.env`:
+## AI và phiên bản
 
-```env
-GOOGLE_API_KEY=YOUR_API_KEY
-GEMINI_MODEL=gemini-2.5-flash
-```
+- ResNet-18 / ImageNet1K V1
+- YOLO11n / Ultralytics 8.3.203
+- OpenAI CLIP ViT-B/32 + FAISS 1.12.0
+- Qwen2.5-0.5B-Instruct + paraphrase-multilingual-MiniLM-L12-v2
+- Python 3.12, PyTorch 2.8.0, torchvision 0.23.0, transformers 4.57.1
 
-Nếu không có `GOOGLE_API_KEY`, ứng dụng tự chuyển sang **Offline Demo Mode**.
-
-## Cách demo trên lớp
-
-1. Chạy `streamlit run app.py`.
-2. Upload 1–3 file PDF.
-3. Bấm **Index documents**.
-4. Mở tab **Hỏi đáp**, nhập câu hỏi về nội dung PDF.
-5. Kiểm tra phần **Nguồn tham khảo** bên dưới câu trả lời.
-6. Chuyển sang **Tóm tắt**, **Quiz**, **Flashcards** để demo đủ 4 chức năng AI.
-
-## Luồng RAG
-
-```mermaid
-flowchart LR
-    A[Upload PDF] --> B[Extract text by page]
-    B --> C[Chunking]
-    C --> D[Embedding]
-    D --> E[Vector Index]
-    Q[User Query] --> F[Semantic Retrieval]
-    E --> F
-    F --> G[Top-k Context]
-    G --> H[Gemini / Offline Generator]
-    H --> I[Answer + Citations]
-```
-
-## AI sử dụng
-
-- **Runtime LLM:** Google Gemini 2.5 Flash (khi có API key).
-- **Embedding:** `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
-- **AI hỗ trợ phát triển:** ChatGPT — GPT-5.6 Sol.
-
-## Lưu ý bảo mật
-
-- Không commit `.env` hoặc API key lên GitHub.
-- `.gitignore` đã bỏ qua `.env`, môi trường ảo và file tạm.
-
-## Tài liệu thuyết trình
-
-Xem `docs/PRESENTATION.md` để có nội dung slide ngắn gọn và phần demo.
-
----
-
-**Sinh viên:** Đoàn Văn Tâm  
-**Mục đích:** Bài tập môn AI — Building a Simple NotebookLM
+> Không commit `.venv`, `node_modules`, cache, dữ liệu tải về hoặc trọng số model lớn lên GitHub.
