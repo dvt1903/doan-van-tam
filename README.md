@@ -2,6 +2,8 @@
 
 Dự án mô phỏng một phiên bản **NotebookLM đơn giản** dành cho học tập từ tài liệu PDF.
 
+![Giao diện Simple NotebookLM](docs/ui-preview.svg)
+
 ## Chức năng chính
 
 1. **Hỏi đáp theo tài liệu (RAG)** — truy xuất các đoạn liên quan và trả lời kèm nguồn file/trang.
@@ -29,8 +31,6 @@ Dự án mô phỏng một phiên bản **NotebookLM đơn giản** dành cho h�
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
-├── data/
-│   └── README.md
 ├── docs/
 │   ├── PRESENTATION.md
 │   └── ui-preview.svg
