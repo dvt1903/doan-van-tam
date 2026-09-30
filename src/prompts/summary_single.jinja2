@@ -1,0 +1,8 @@
+TASK=SUMMARY
+Hãy tóm tắt duy nhất từ các nguồn bên dưới. Không thêm kiến thức ngoài nguồn.
+Trả về JSON hợp lệ đúng cấu trúc:
+{"summary":"...","key_points":["...","..."]}
+
+{% for chunk in chunks %}[S{{ loop.index }}] {{ chunk.metadata.filename }} - trang {{ chunk.metadata.page }}
+{{ chunk.text }}
+{% endfor %}

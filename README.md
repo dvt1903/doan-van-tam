@@ -1,118 +1,235 @@
-# AI Studio — Web tích hợp 4 chức năng AI
+# 📚 Simple NotebookLM — RAG Learning System
 
-Dự án bài tập xây dựng website có **4 chức năng AI**, phát triển từ notebook `AI_Web_Apps_Streamlit_React.ipynb` của giảng viên.
+Project mô phỏng một **NotebookLM đơn giản**: người dùng tải PDF, hệ thống chia tài liệu thành chunk, vector hóa và lưu vào **Qdrant**, sau đó dùng kiến trúc **Retrieval-Augmented Generation (RAG)** để trả lời câu hỏi dựa trên tài liệu. Ngoài Q&A, project có **Tóm tắt**, **Quiz**, **Flashcards**, REST API, CLI, Streamlit UI và phần đánh giá RAG bằng **Ragas**.
 
-## ✅ Nội dung bài nộp
+## Chức năng hoàn chỉnh
 
-- **Mã nguồn đầy đủ** trên repository GitHub này.
-- **README có ảnh giao diện** để giảng viên xem nhanh kết quả.
-- **01 slide PowerPoint ngắn gọn về cách làm**: [`docs/AI_Studio_Cach_Lam.pptx`](docs/AI_Studio_Cach_Lam.pptx).
+- ✅ Upload PDF + index tự động vào Qdrant
+- ✅ Semantic retrieval + metadata filter theo tài liệu/trang
+- ✅ Hỏi đáp có trích dẫn `[S1]`, `[S2]` và nguồn trang
+- ✅ Tóm tắt toàn tài liệu / theo filter / theo truy vấn; hỗ trợ map-reduce
+- ✅ Tạo Quiz 4 lựa chọn, đáp án, giải thích và nguồn
+- ✅ Tạo Flashcards có front/back/hint/topic/source
+- ✅ Export JSON / Markdown
+- ✅ FastAPI: `/health`, `/documents`, `/upload`, `/ask`, `/debug-retrieval`, `/summarize`, `/quiz`, `/flashcards`
+- ✅ Typer CLI
+- ✅ Streamlit UI 4 tab
+- ✅ Ragas: faithfulness, answer relevancy, context precision, context recall
+- ✅ Thực nghiệm Recursive/Semantic Chunking
+- ✅ Reranking bằng `BAAI/bge-reranker-v2-m3`
+- ✅ Docker / Docker Compose
+- ✅ Offline demo mode (`mock` LLM + `hash` embeddings) để chạy không cần API key
 
-## 4 chức năng AI
-
-| Chức năng | Mô hình / công nghệ |
-|---|---|
-| 🌼 Nhận diện loài hoa | ResNet-18, ImageNet1K V1 + TF Flowers |
-| 🚗 Phát hiện đối tượng | YOLO11n, 80 lớp COCO |
-| 🔎 Tìm kiếm ảnh | CLIP ViT-B/32 + FAISS |
-| 💬 Chatbot RAG ShopLite | Qwen2.5-0.5B-Instruct + MiniLM |
-
-## Ảnh giao diện
-
-![Tổng quan giao diện 4 chức năng AI](docs/screenshots/ui-overview.jpg)
-
-Ảnh tổng hợp thể hiện giao diện các chức năng nhận diện hoa, phát hiện đối tượng, tìm kiếm ảnh, chatbot RAG và bố cục responsive/mobile.
-
-## Cách làm
+## Kiến trúc
 
 ```text
-React (web/) → FastAPI (api/) → AI models (core/)
-                              ├─ ResNet-18
-                              ├─ YOLO11n
-                              ├─ CLIP + FAISS
-                              └─ Qwen2.5 + MiniLM RAG
+PDF -> PyPDFLoader -> Chunking -> Embedding -> Qdrant
+                                      |
+User -> Query -> Retrieval -----------+
+                 -> Prompt -> LLM -> Answer + Citations
+                           -> Summary / Quiz / Flashcards
 ```
 
-Frontend React gửi ảnh/câu hỏi đến FastAPI. Backend giữ các model AI trong bộ nhớ và gọi module suy luận trong `core/`. Kết quả được trả về để giao diện hiển thị trực tiếp.
+## Cấu trúc thư mục
 
-## Chạy dự án
+```text
+.
+├── data/
+├── src/
+│   ├── prompts/
+│   ├── interfaces/
+│   │   ├── api.py
+│   │   ├── cli.py
+│   │   ├── ui.py
+│   │   └── styles.py
+│   ├── evaluation/
+│   │   ├── benchmark_rag.csv
+│   │   ├── chunking_strategies.py
+│   │   ├── ragas_evaluator.py
+│   │   ├── run_chunking.py
+│   │   └── run_reranking.py
+│   ├── config.py
+│   ├── schemas.py
+│   ├── indexing.py
+│   ├── store.py
+│   ├── rag.py
+│   ├── learning.py
+│   ├── llm.py
+│   ├── filters.py
+│   └── export.py
+├── storage/qdrant/
+├── tests/
+├── .env.example
+├── requirements.txt
+├── pyproject.toml
+├── Dockerfile
+└── docker-compose.yml
+```
 
-### Windows
+## Chạy nhanh nhất
 
+Sau khi cài dependencies (`pip install -r requirements.txt`), có thể chạy trực tiếp:
+
+**Windows**
 ```bat
 start.bat
 ```
 
-### Linux / macOS
-
+**macOS/Linux**
 ```bash
 chmod +x start.sh
 ./start.sh
 ```
 
-Sau đó mở:
+Script sẽ tạo `.env` từ `.env.example` nếu chưa có, rồi mở FastAPI và Streamlit.
 
-```text
-http://localhost:8000
+## Chạy nhanh trên Windows / macOS / Linux
+
+### 1) Tạo môi trường
+
+```bash
+python -m venv .venv
 ```
 
-Lần chạy đầu cần Internet để tải dữ liệu và pretrained models. Không cần API key.
-
-## Kết quả thử nghiệm
-
-ResNet-18 đạt **90,19% accuracy trên 367 ảnh test riêng** trong bộ dữ liệu Flowers của project.
-
-## Cấu trúc thư mục
-
-```text
-api/             FastAPI backend
-core/            module AI
-web/             React + Vite frontend
-scripts/         chuẩn bị dữ liệu/model
-data/kb/         tài liệu RAG ShopLite
-docs/            ảnh giao diện + slide nộp bài
-requirements.txt thư viện Python
-start.bat        chạy nhanh trên Windows
-start.sh         chạy trên Linux/macOS
+Windows:
+```powershell
+.venv\Scripts\activate
 ```
 
-## Slide ngắn gọn về cách làm
+macOS/Linux:
+```bash
+source .venv/bin/activate
+```
 
-📎 **PowerPoint:** [`AI_Studio_Cach_Lam.pptx`](docs/AI_Studio_Cach_Lam.pptx)
+### 2) Cài thư viện
 
-Nội dung slide: kiến trúc React → FastAPI → AI models, 4 tính năng AI, cách chạy và kết quả chính.
+```bash
+pip install -r requirements.txt
+```
 
-## AI và phiên bản
+### 3) Cấu hình
 
-### AI chạy trong sản phẩm
+```bash
+copy .env.example .env
+```
 
-- ResNet-18 / ImageNet1K V1
-- YOLO11n / Ultralytics 8.3.203
-- OpenAI CLIP ViT-B/32 + FAISS 1.12.0
-- Qwen2.5-0.5B-Instruct
-- `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
+Trên macOS/Linux dùng `cp .env.example .env`.
 
-### AI hỗ trợ hoàn thiện bài
+Mặc định `.env.example` dùng **offline demo mode**:
 
-- **ChatGPT — GPT-5.6 Sol**: hỗ trợ kiểm tra cấu trúc bài nộp, README và tổ chức repository GitHub.
+```env
+RAG_LLM_PROVIDER=mock
+RAG_EMBEDDING_PROVIDER=hash
+```
 
-## Môi trường
+Để dùng AI thật bằng Gemini:
 
-- Python 3.12
-- PyTorch 2.8.0
-- torchvision 0.23.0
-- transformers 4.57.1
-- React + Vite
-- FastAPI
+```env
+RAG_LLM_PROVIDER=gemini
+RAG_EMBEDDING_PROVIDER=hf
+GOOGLE_API_KEY=YOUR_KEY
+```
 
-> Không commit `.venv`, `node_modules`, cache hoặc trọng số model lớn lên GitHub. Các tài nguyên cần thiết được tải khi chuẩn bị/chạy project.
+### 4) Chạy backend
 
----
+```bash
+uvicorn src.interfaces.api:app --reload --port 8000
+```
 
-### Checklist trước khi nộp
+Mở API docs: `http://localhost:8000/docs`
 
-- [x] Có mã nguồn trên GitHub
-- [x] README có ảnh giao diện
-- [x] Có slide PowerPoint ngắn gọn về cách làm
-- [x] Có hướng dẫn chạy project
-- [x] Có ghi AI/model và phiên bản sử dụng
+### 5) Chạy giao diện
+
+Mở terminal thứ hai:
+
+```bash
+streamlit run src/interfaces/ui.py
+```
+
+Mở: `http://localhost:8501`
+
+### 6) Sử dụng
+
+1. Ở sidebar, upload một file PDF.
+2. Bấm **Nạp & index tài liệu**.
+3. Chọn một hoặc nhiều tài liệu.
+4. Dùng 4 tab: **Hỏi đáp**, **Tóm tắt**, **Quiz**, **Flashcards**.
+
+## CLI
+
+```bash
+python -m src.interfaces.cli ingest --recreate
+python -m src.interfaces.cli ask "RAG là gì?"
+python -m src.interfaces.cli debug-retrieval "RAG là gì?" --k 5
+python -m src.interfaces.cli summarize --document ten-file.pdf --fmt md --output outputs/summary.md
+python -m src.interfaces.cli quiz --document ten-file.pdf --count 5 --fmt json
+python -m src.interfaces.cli flashcards --document ten-file.pdf --count 10 --fmt md
+```
+
+## REST API ví dụ
+
+```bash
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"RAG là gì?","k":5}'
+```
+
+## Chạy bằng Docker
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+- API: `http://localhost:8000/docs`
+- UI: `http://localhost:8501`
+
+## Đánh giá RAG
+
+### Chunking
+
+```bash
+python -m src.evaluation.run_chunking \
+  --benchmark src/evaluation/benchmark_rag.csv \
+  --judge-provider gemini
+```
+
+Các cấu hình Recursive: `500/50`, `800/100`, `1000/150`, `1500/200`.
+Semantic Chunking: percentile, standard deviation, interquartile.
+
+### Reranking
+
+```bash
+python -m src.evaluation.run_reranking \
+  --judge-provider gemini \
+  --initial-k 15 \
+  --rerank-k 5
+```
+
+## Trạng thái kiểm tra mã nguồn
+
+- `python -m pytest -q` → **3 passed**
+- `python -m compileall -q src tests` → **passed**
+- Lưu ý: môi trường thực thi cần cài `requirements.txt`; lần đầu dùng embedding/model Hugging Face cần Internet để tải model.
+
+## Kiểm thử
+
+```bash
+pytest -q
+python -m compileall -q src tests
+```
+
+## Lưu ý khi nộp bài
+
+- Không commit file `.env` hoặc API key.
+- Không commit dữ liệu vector trong `storage/qdrant/`.
+- Có thể thêm PDF mẫu vào `data/` khi demo tại máy local; repo mặc định bỏ qua PDF để tránh đẩy tài liệu nặng.
+- Nếu repo đang để **Private**, hãy chuyển sang **Public** hoặc mời giảng viên làm collaborator trước khi nộp link.
+
+## Công nghệ
+
+Python 3.11+, FastAPI, Streamlit, Qdrant, LangChain, Hugging Face, Gemini, vLLM/OpenAI-compatible API, Jinja2, Pydantic, Typer, Sentence Transformers, Ragas.
+
+## AI assistance disclosure
+
+Project này được hoàn thiện với sự hỗ trợ của **ChatGPT — GPT-5.6 Sol** trong việc triển khai, rà soát cấu trúc và tài liệu hóa mã nguồn.
