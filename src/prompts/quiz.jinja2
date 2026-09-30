@@ -1,0 +1,9 @@
+TASK=QUIZ
+COUNT={{ count }}
+Tạo đúng tối đa {{ count }} câu hỏi trắc nghiệm từ NGỮ CẢNH. Mỗi câu có đúng 4 lựa chọn, 1 đáp án đúng, giải thích ngắn và nguồn [Sx]. Không dùng kiến thức ngoài nguồn.
+Trả về JSON hợp lệ:
+{"items":[{"question":"...","options":["A","B","C","D"],"correct_index":0,"explanation":"...","source_markers":["S1"],"difficulty":"medium","topic":"..."}]}
+
+{% for chunk in chunks %}[S{{ loop.index }}] {{ chunk.metadata.filename }} - trang {{ chunk.metadata.page }}
+{{ chunk.text }}
+{% endfor %}

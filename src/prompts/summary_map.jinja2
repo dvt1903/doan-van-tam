@@ -1,0 +1,8 @@
+TASK=SUMMARY_MAP
+Tóm tắt nhóm nguồn này để phục vụ bước map-reduce. Chỉ dùng nội dung được cung cấp.
+Trả về JSON hợp lệ đúng cấu trúc:
+{"summary":"...","key_points":["...","..."]}
+
+{% for chunk in chunks %}[S{{ loop.index }}] {{ chunk.metadata.filename }} - trang {{ chunk.metadata.page }}
+{{ chunk.text }}
+{% endfor %}

@@ -1,0 +1,4 @@
+question,ground_truth
+"RAG là gì?","RAG là kiến trúc kết hợp truy xuất ngữ cảnh liên quan từ kho tri thức với mô hình ngôn ngữ để tạo phản hồi bám sát tài liệu nguồn."
+"Hệ thống có những chức năng học tập chính nào?","Hệ thống hỗ trợ hỏi đáp trên tài liệu, tóm tắt, tạo quiz và tạo flashcards."
+"Reranking được dùng để làm gì?","Reranking chấm lại độ liên quan của các chunk sau bước truy xuất ban đầu để chọn ngữ cảnh chính xác hơn trước khi đưa vào LLM."

@@ -1,0 +1,9 @@
+TASK=SUMMARY_REDUCE
+Hợp nhất các bản tóm tắt con thành một bản cuối cùng, không thêm dữ kiện mới.
+Trả về JSON hợp lệ đúng cấu trúc:
+{"summary":"...","key_points":["...","..."]}
+
+{% for p in partials %}PART {{ loop.index }}
+SUMMARY: {{ p.summary }}
+KEY_POINTS: {{ p.key_points | join(' | ') }}
+{% endfor %}

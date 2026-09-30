@@ -1,0 +1,9 @@
+TASK=FLASHCARDS
+COUNT={{ count }}
+Tạo đúng tối đa {{ count }} flashcard từ NGỮ CẢNH. Mỗi thẻ phải có mặt trước, mặt sau, gợi ý tùy chọn, chủ đề và nguồn [Sx]. Không dùng kiến thức ngoài nguồn.
+Trả về JSON hợp lệ:
+{"cards":[{"front":"...","back":"...","hint":"...","topic":"...","source_markers":["S1"]}]}
+
+{% for chunk in chunks %}[S{{ loop.index }}] {{ chunk.metadata.filename }} - trang {{ chunk.metadata.page }}
+{{ chunk.text }}
+{% endfor %}

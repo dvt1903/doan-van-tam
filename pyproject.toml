@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simple-notebooklm-rag"
+version = "1.0.0"
+description = "A simple NotebookLM-style RAG learning system over PDF documents"
+requires-python = ">=3.11"
+readme = "README.md"
+
+[project.scripts]
+notebooklm-cli = "src.interfaces.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
