@@ -66,6 +66,23 @@ User -> Query -> Retrieval -----------+
 └── docker-compose.yml
 ```
 
+## Chạy nhanh nhất
+
+Sau khi cài dependencies (`pip install -r requirements.txt`), có thể chạy trực tiếp:
+
+**Windows**
+```bat
+start.bat
+```
+
+**macOS/Linux**
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+Script sẽ tạo `.env` từ `.env.example` nếu chưa có, rồi mở FastAPI và Streamlit.
+
 ## Chạy nhanh trên Windows / macOS / Linux
 
 ### 1) Tạo môi trường
@@ -188,6 +205,12 @@ python -m src.evaluation.run_reranking \
   --initial-k 15 \
   --rerank-k 5
 ```
+
+## Trạng thái kiểm tra mã nguồn
+
+- `python -m pytest -q` → **3 passed**
+- `python -m compileall -q src tests` → **passed**
+- Lưu ý: môi trường thực thi cần cài `requirements.txt`; lần đầu dùng embedding/model Hugging Face cần Internet để tải model.
 
 ## Kiểm thử
 
